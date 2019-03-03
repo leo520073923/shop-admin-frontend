@@ -1,28 +1,42 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <app-login></app-login>
+    <!-- 调用Element UI组件 -->
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from "./components/HelloWorld.vue";
+import Login from "./components/Login.vue";
 
 export default {
-  name: 'app',
+  name: "app",
+  data() {
+    return {
+      uid: "",
+      pass: ""
+    };
+  },
+  methods: {
+    getUidAndPass: function() {
+      console.log(this.uid + this.pass);
+    },
+    clearAll: function() {
+      (this.uid = ""), (this.pass = "");
+    }
+  },
   components: {
-    HelloWorld
+    "app-login": Login
+  },
+  mounted() {
+    //请求数据
+    // this.$axios
+    //   .get("http://127.0.0.1:8899/admin/account/getlist?pageIndex=1&pageSize=5")
+    //   .then(res => {
+    //     console.log(res.data);
+    //   });
   }
-}
+};
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+
