@@ -5,18 +5,37 @@ import App from './App.vue'
 import axios from 'axios';
 
 // 2.把axios绑定到vue实例的属性$axios
-Vue.prototype.$axios=axios;
+Vue.prototype.$axios = axios;
 
-//1.引入element-ui
-import ElementUI from 'element-ui';
-// 2.引入element-ui样式
+// element-ui：1.引入
+import ElementUI from "element-ui";
+// element-ui: 2.引入样式
 import 'element-ui/lib/theme-chalk/index.css';
+
+//引入vue-router
+import VueRouter from "vue-router";
+
+// 导入组件
+import Login from "./pages/Login";
+import Admin from "./pages/Admin";
+
+//注册插件
+Vue.use(VueRouter)
 
 // 3.全局注册组件
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
+//配置路由
+const routes = [{path:"/",redirect:"/admin"},
+{path: "/login",component: Login,meta: "登录",}, 
+{path: "/admin",component: Admin,meta: "首页",}]
+
+const router=new VueRouter({routes})
+
 new Vue({
+  // 挂载到根实例
+  router,
   render: h => h(App),
 }).$mount('#app')

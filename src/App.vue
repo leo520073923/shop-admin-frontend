@@ -1,33 +1,18 @@
 <template>
   <div id="app">
-    <app-login></app-login>
+    <router-view></router-view>
     <!-- 调用Element UI组件 -->
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
-import Login from "./components/Login.vue";
+// import Login from "./components/Login.vue";
 
 export default {
-  name: "app",
-  data() {
-    return {
-      uid: "",
-      pass: ""
-    };
-  },
-  methods: {
-    getUidAndPass: function() {
-      console.log(this.uid + this.pass);
-    },
-    clearAll: function() {
-      (this.uid = ""), (this.pass = "");
-    }
-  },
-  components: {
-    "app-login": Login
-  },
+
+  // components: {
+  //   "app-login": Login
+  // },
   mounted() {
     //请求数据
     // this.$axios
@@ -38,5 +23,14 @@ export default {
   }
 };
 </script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+}
+
+</style>
 
 
