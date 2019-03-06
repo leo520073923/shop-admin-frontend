@@ -19,6 +19,7 @@ import VueRouter from "vue-router";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import GoodsList from "./pages/goods/GoodsList";
+import GoodsAdd from "./pages/goods/GoodsAdd";
 import CategoryList from "./pages/category/CategoryList";
 
 
@@ -46,14 +47,20 @@ const routes = [{
     meta: "首页",
     redirect: "/admin/goods-list",
     children: [{
-      path: "goods-list",
-      component: GoodsList,
-      meta: "商品列表"
-    },{
-      path: "category-list",
-      component: CategoryList,
-      meta: "栏目列表"
-    } ]
+        path: "goods-list",
+        component: GoodsList,
+        meta: "商品列表"
+      }, {
+        path: "category-list",
+        component: CategoryList,
+        meta: "栏目列表"
+      },
+      {
+        path: "goods-add",
+        component: GoodsAdd,
+        meta: "添加商品"
+      }
+    ]
   }
 ]
 

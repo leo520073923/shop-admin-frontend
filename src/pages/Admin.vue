@@ -16,10 +16,12 @@
         <el-header>
           <app-header @onChange="changeCollapse"></app-header>
         </el-header>
-        <!-- 面包屑 -->
-        <app-breadcrumb></app-breadcrumb>
         <!-- 主体 -->
+        <el-main>
+          <!-- 面包屑 -->
+        <app-breadcrumb></app-breadcrumb>
         <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -76,9 +78,9 @@ export default {
 }
 .el-main {
   background-color: #e9eef3;
-  color: #333;
+  /* color: #333; */
   text-align: center;
-  line-height: 160px;
+  line-height: 70px;
 }
 .el-container {
   margin-bottom: 40px;
