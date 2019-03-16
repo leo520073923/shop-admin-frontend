@@ -4,16 +4,6 @@
     <el-form ref="form" :model="form" label-width="80px" :label-position="labelPosition">
       <el-form-item label="所属类别">
         <el-select v-model="form.category_id" placeholder="请选择">
-          <!-- label是分组的标题 -->
-          <!-- <el-option-group v-for="(item, index) in categorys" :key="index" :label="item.title">
-          <el-option
-            v-for="(subItem, subIndex) in item.group"
-            :key="subIndex"
-            :label="subItem.title"
-            :value="subItem.category_id"
-          ></el-option>
-          </el-option-group>-->
-          <!-- 这种写法很脆弱，不是任何情况下都适合，比如后台修改了数据的category_id的排序，这种循环就不能使用  -->
           <el-option-group
             v-for="(item, index) in categorys"
             :key="index"
@@ -24,7 +14,7 @@
               v-for="(subItem,subIndex) in categorys"
               v-if="subItem.parent_id==item.category_id"
               :key="subIndex"
-              :label="subItem.title"
+              :label="`${subItem.category_id} ${subItem.title}`"
               :value="subItem.category_id"
             ></el-option>
           </el-option-group>
@@ -38,7 +28,7 @@
       </el-form-item>
       <!-- <el-form-item label="是否显示">
         <el-switch v-model="form.is_slide"></el-switch>
-      </el-form-item> -->
+      </el-form-item>-->
       <el-form-item label="推荐类型">
         <el-checkbox label="置顶" v-model="form.is_top"></el-checkbox>
         <el-checkbox label="热门" v-model="form.is_hot"></el-checkbox>
@@ -85,6 +75,7 @@
           :on-preview="handlePictureCardPreview"
           :on-remove="handleRemove"
           :on-success="handleFileList"
+          :file-list="form.fileList"
         >
           <i class="el-icon-plus"></i>
         </el-upload>
@@ -103,8 +94,8 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">立即创建</el-button>
-        <el-button @click="resetForm('form')">重置</el-button>
+        <el-button type="primary" @click="onSubmit">修改</el-button>
+        <el-button @click="resetForm('form')">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -141,7 +132,6 @@ export default {
         fileList: [],
         is_slide: false
       },
-
       // 头像图片
       imageUrl: "",
 
@@ -150,7 +140,9 @@ export default {
       // 是否预览图片
       dialogVisible: false,
       // 类别数据
-      categorys: []
+      categorys: [],
+      // 商品id
+      id: ""
     };
   },
   // 祖册组件
@@ -161,33 +153,31 @@ export default {
   methods: {
     //提交表单数据
     onSubmit() {
-      
-        this.$axios({
-            method: "POST",
-            url: "/admin/goods/add/goods",
-            data: this.form,
-            // 处理跨域
-            withCredentials: true,
-        }).then(res => {
-            const {message, status} = res.data;
+      this.$axios({
+        method: "POST",
+        url: `/admin/goods/edit/${this.id}`,
+        data: this.form,
+        // 处理跨域
+        withCredentials: true
+      }).then(res => {
+        const { message, status } = res.data;
 
-            if(status == 0){
-                this.$message({
-                    message: message,
-                    type: 'success'
-                });
+        if (status == 0) {
+          this.$message({
+            message: message,
+            type: "success"
+          });
 
-                setTimeout(() => {
-                    this.$router.replace("/admin/goods-list")
-                }, 1000)
-            }
-        })
-
+          setTimeout(() => {
+            this.$router.replace("/admin/goods-list");
+          }, 1000);
+        }
+      });
     },
 
-    //重置表单
+    //退回上一页
     resetForm(form) {
-      this.$refs[form].resetFields();
+      this.$router.back();
     },
 
     // 上传封面图片成功的回调函数
@@ -224,7 +214,15 @@ export default {
     },
     //移出选中的图片
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      if (fileList.length === 0) {
+        this.$message({
+          type: "warning",
+          message: "至少保留一张图片"
+        });
+        return;
+      }
+      // 在编辑时候如果只有一张图片后台没法删除,至少保留一张图片
+      this.form.fileList = fileList;
     }
   },
   mounted() {
@@ -233,34 +231,40 @@ export default {
       method: "GET",
       url: `admin/category/getlist/goods`
     }).then(res => {
-      // console.log(res);
+        // console.log(res);
       const { message } = res.data;
 
       this.categorys = message;
+    });
 
-      // 2.*************************************
-      // 思考： 为什么没有渲染出夏装 #17条
+    //获取动态路由id
+    const { id } = this.$route.params;
 
-      // 最终保存的结果数组
-      // let options = [];
+    //保存到data
+    this.id = id;
 
-      // message.forEach(v => {
-      //     // 当前类别是顶级类别时候
-      //     if(v.parent_id == 0){
-      //         v.group = [];
-      //         options.push(v)
-      //     }else{
-      //         // 子类别判断
-      //         options.forEach(item => {
-      //             // 如果成立的话当前类别就是options其中一个顶级类别子选项
-      //             if(item.category_id == v.parent_id){
-      //                 item.group.push(v);
-      //             }
-      //         })
-      //     }
-      // })
+    //获取id来渲染出需要编辑的数据
+    this.$axios({
+      url: `admin/goods/getgoodsmodel/${id}`,
+      // 处理跨域
+      withCredentials: true
+    }).then(res => {
+      const { message } = res.data;
+      //初始化表单的值
+      this.form = message;
 
-      // this.categorys = options;
+      //预览图片
+      this.imageUrl = message.imgList[0].url;
+    //   this.form.fileList=this.form.imgList[0].url;
+    //   console.log(this.form);
+        this.form.fileList=message.fileList.map(v=>{
+            console.log(v)
+            return{
+                ...v,
+                // 覆盖 v 对象里面的url
+                url:`http://localhost:8899` + v.shorturl
+            }
+        })
     });
   }
 };
